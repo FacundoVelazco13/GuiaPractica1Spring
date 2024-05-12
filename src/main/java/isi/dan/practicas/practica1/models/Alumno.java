@@ -13,6 +13,14 @@ public class Alumno {
     @ManyToMany(mappedBy = "alumnosInscriptos")
     private List<Curso> cursosInscriptos;
 
+    public Alumno() {
+    }
+    public Alumno(Integer id, String nombre, String legajo, List<Curso> cursosInscriptos) {
+        this.id = id;
+        this.nombre = nombre;
+        this.legajo = legajo;
+        this.cursosInscriptos = cursosInscriptos;
+    }
     public Integer getId() {
         return id;
     }
@@ -43,5 +51,15 @@ public class Alumno {
 
     public void setCursosInscriptos(List<Curso> cursosInscriptos) {
         this.cursosInscriptos = cursosInscriptos;
+    }
+
+    @Override
+    public String toString() {
+        return "Alumno{" +
+                "id=" + id +
+                ", nombre='" + nombre + '\'' +
+                ", legajo='" + legajo + '\'' +
+                ", cursosInscriptos=" + cursosInscriptos +
+                '}';
     }
 }

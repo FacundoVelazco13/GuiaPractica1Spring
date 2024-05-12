@@ -1,0 +1,11 @@
+#spring.profiles.active=test,dev
+
+# Configuración de la base de datos JDBC
+
+#spring.datasource.url=jdbc:postgresql://localhost:5432/dan_practica1_db_test
+#spring.datasource.username=postgres
+#spring.datasource.password=postgres
+#spring.datasource.driver-class-name=org.postgresql.Driver
+#spring.jpa.show-sql=true
+#spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+#spring.jpa.hibernate.ddl-auto=update
