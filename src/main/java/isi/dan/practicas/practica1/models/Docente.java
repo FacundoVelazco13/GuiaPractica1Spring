@@ -12,7 +12,14 @@ public class Docente {
     private Double salario;
     @OneToMany(mappedBy = "docenteAsignado")
     private List<Curso> cursosDictados;
-
+    public Docente() {
+    }
+    public Docente(Integer id, String nombre, Double salario, List<Curso> cursosDictados) {
+        this.id = id;
+        this.nombre = nombre;
+        this.salario = salario;
+        this.cursosDictados = cursosDictados;
+    }
     public Integer getId() {
         return id;
     }

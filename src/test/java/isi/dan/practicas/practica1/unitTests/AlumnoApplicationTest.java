@@ -4,22 +4,25 @@ import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import isi.dan.practicas.practica1.models.Alumno;
 import isi.dan.practicas.practica1.models.Curso;
+import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.annotation.DirtiesContext;
 
 import java.net.URI;
 import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class AlumnoAplicationTest {
+public class AlumnoApplicationTest {
     @Autowired
     TestRestTemplate restTemplate;
 
@@ -41,6 +44,10 @@ public class AlumnoAplicationTest {
         ResponseEntity<String> response = restTemplate
                 .getForEntity("/alumno", String.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+        DocumentContext documentContext = JsonPath.parse(response.getBody());
+        List<JsonPath> alumnos = documentContext.read("$..id");
+        AssertionsForClassTypes.assertThat(alumnos).asList().isNotEmpty();
     }
     @Test
     void shouldCreateAlumno() {
@@ -64,6 +71,14 @@ public class AlumnoAplicationTest {
         assertThat(legajo).isEqualTo("9999/9");
     }
     @Test
+    void ShouldNotCreateAlumnoWithId() {
+        Alumno newAlumno = new Alumno(9999, "test", "9999/9", null);
+        ResponseEntity<Void> response = restTemplate
+                .postForEntity("/alumno", newAlumno, Void.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+    @Test
+    @DirtiesContext
     void shouldUpdateAlumno() {
         Alumno updateAlumno = new Alumno(null, "AlumnoActualizado", "1000/0", null);
         HttpEntity<Alumno> request = new HttpEntity<>(updateAlumno);
@@ -84,6 +99,7 @@ public class AlumnoAplicationTest {
         assertThat(cursos).isNotNull();
     }
     @Test
+    @DirtiesContext
     void shouldDeleteAlumno() {
         ResponseEntity<Void> response = restTemplate
                 .exchange("/alumno/101", HttpMethod.DELETE, null, Void.class);
