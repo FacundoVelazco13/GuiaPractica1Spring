@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -51,7 +52,7 @@ public class AlumnoApplicationTest {
     }
     @Test
     void shouldCreateAlumno() {
-        Alumno newAlumno = new Alumno(null, "test", "9999/9", null);
+        Alumno newAlumno = new Alumno(null, "test", "9999/9", new ArrayList<>());
         ResponseEntity<Void> response = restTemplate
                 .postForEntity("/alumno", newAlumno, Void.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);

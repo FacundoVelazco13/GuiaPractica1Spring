@@ -1,11 +1,14 @@
 package isi.dan.practicas.practica1.models;
 
+import com.fasterxml.jackson.annotation.*;
 import isi.dan.practicas.practica1.exceptions.CupoExcedidoException;
 import isi.dan.practicas.practica1.exceptions.DocenteExcedidoException;
 import jakarta.persistence.*;
 
 import java.util.List;
 @Entity
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id")
 public class Curso {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -13,6 +16,7 @@ public class Curso {
     private String nombre;
     private Integer creditos;
     private Integer cupo;
+    @JsonBackReference(value = "docente-curso")
     @ManyToOne
     private Docente docenteAsignado;
     @ManyToMany
@@ -23,6 +27,16 @@ public class Curso {
     )
     private List<Alumno> alumnosInscriptos;
 
+    public Curso() {
+    }
+    public Curso(Integer id, String nombre, Integer creditos, Integer cupo, Docente docenteAsignado, List<Alumno> alumnosInscriptos) {
+        this.id = id;
+        this.nombre = nombre;
+        this.creditos = creditos;
+        this.cupo = cupo;
+        this.docenteAsignado = docenteAsignado;
+        this.alumnosInscriptos = alumnosInscriptos;
+    }
     public Integer getId() {
         return id;
     }
@@ -64,7 +78,6 @@ public class Curso {
             throw new DocenteExcedidoException();
         }else this.docenteAsignado = docenteAsignado;
     }
-
     public List<Alumno> getAlumnosInscriptos() {
         return alumnosInscriptos;
     }
@@ -76,5 +89,17 @@ public class Curso {
         if (this.alumnosInscriptos.size() >= this.cupo) {
             throw new CupoExcedidoException();
         }else this.alumnosInscriptos.add(alumno);
+    }
+
+    @Override
+    public String toString() {
+        return "Curso{" +
+                "id=" + id +
+                ", nombre='" + nombre + '\'' +
+                ", creditos=" + creditos +
+                ", cupo=" + cupo +
+                ", docenteAsignado=" + docenteAsignado +
+                ", alumnosInscriptos=" + alumnosInscriptos +
+                '}';
     }
 }

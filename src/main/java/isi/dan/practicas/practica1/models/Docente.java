@@ -1,15 +1,20 @@
 package isi.dan.practicas.practica1.models;
 
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 
 import java.util.List;
+
 @Entity
+//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class,
+//        property = "id")
 public class Docente {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Integer id;
     private String nombre;
     private Double salario;
+    @JsonManagedReference(value = "docente-curso")
     @OneToMany(mappedBy = "docenteAsignado")
     private List<Curso> cursosDictados;
     public Docente() {
