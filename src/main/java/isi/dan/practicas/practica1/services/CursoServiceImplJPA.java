@@ -3,6 +3,7 @@ package isi.dan.practicas.practica1.services;
 import isi.dan.practicas.practica1.exceptions.DocenteExcedidoException;
 import isi.dan.practicas.practica1.models.Curso;
 import isi.dan.practicas.practica1.repositories.CursoJpaRepository;
+import isi.dan.practicas.practica1.repositories.DocenteJpaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,8 +13,13 @@ import java.util.Optional;
 public class CursoServiceImplJPA implements CursoService {
     @Autowired
     CursoJpaRepository cursoJpaRepository;
+    @Autowired
+    DocenteJpaRepository docenteJpaRepository;
     @Override
-    public Curso saveCurso(Curso curso) {
+    public Curso saveCurso(Curso curso) throws DocenteExcedidoException {
+        if(curso.getDocenteAsignado()!=null ){
+            if(docenteJpaRepository.findById(curso.getDocenteAsignado().getId()).get().getCursosDictados().size() >= 3) throw new DocenteExcedidoException();
+        }
         Curso realCurso;
         if(curso.getId() != null){
             realCurso = cursoJpaRepository.findById(curso.getId()).get();

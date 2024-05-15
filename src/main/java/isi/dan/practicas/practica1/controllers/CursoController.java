@@ -1,5 +1,6 @@
 package isi.dan.practicas.practica1.controllers;
 
+import isi.dan.practicas.practica1.exceptions.DocenteExcedidoException;
 import isi.dan.practicas.practica1.models.Curso;
 import isi.dan.practicas.practica1.services.CursoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,11 @@ public class CursoController {
     @PostMapping
     public ResponseEntity<Void> saveCurso(@RequestBody Curso curso, UriComponentsBuilder ucb) {
         if (curso.getId() != null) return ResponseEntity.badRequest().build();
-        cursoService.saveCurso(curso);
+        try {
+            cursoService.saveCurso(curso);
+        } catch (DocenteExcedidoException e) {
+            return ResponseEntity.badRequest().build();
+        }
         URI locationOfNewCurso = ucb.path("/curso/{id}").buildAndExpand(curso.getId()).toUri();
         return ResponseEntity.created(locationOfNewCurso).build();
     }
@@ -37,7 +42,11 @@ public class CursoController {
     public ResponseEntity<Void> updateCurso(@PathVariable Integer id, @RequestBody Curso curso) {
         if (cursoService.findCursoById(id).isEmpty()) return ResponseEntity.notFound().build();
         curso.setId(id);
-        cursoService.saveCurso(curso);
+        try {
+            cursoService.saveCurso(curso);
+        } catch (DocenteExcedidoException e) {
+            return ResponseEntity.badRequest().build();
+        }
         return ResponseEntity.noContent().build();
     }
     @DeleteMapping("/{id}")

@@ -2,10 +2,12 @@ package isi.dan.practicas.practica1.unitTests;
 
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
+import isi.dan.practicas.practica1.exceptions.DocenteExcedidoException;
 import isi.dan.practicas.practica1.models.Curso;
 import isi.dan.practicas.practica1.models.Docente;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.amqp.RabbitProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpEntity;
@@ -18,6 +20,8 @@ import javax.print.Doc;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -53,7 +57,10 @@ public class CursoApplicationTest {
     }
     @Test
     void ShouldCreateCurso() {
-        Curso newCurso = new Curso(null, "newCurso", 99, 99, null, null);
+        Curso newCurso = new Curso();
+        newCurso.setNombre("newCurso");
+        newCurso.setCreditos(99);
+        newCurso.setCupo(99);
         ResponseEntity<Void> response = restTemplate
                 .postForEntity("/curso", newCurso, Void.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
@@ -73,7 +80,11 @@ public class CursoApplicationTest {
     }
     @Test
     void shouldNotCreateCursoWithId() {
-        Curso newCurso = new Curso(1, "newCurso", 99, 99, null,null);
+        Curso newCurso = new Curso();
+        newCurso.setId(99);
+        newCurso.setNombre("newCurso");
+        newCurso.setCreditos(99);
+        newCurso.setCupo(99);
         ResponseEntity<Void> response = restTemplate
                 .postForEntity("/curso", newCurso, Void.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
@@ -81,7 +92,10 @@ public class CursoApplicationTest {
     @Test
     @DirtiesContext
     void shouldUpdateCurso() {
-        Curso newCurso = new Curso(null, "CursoActualizado", 100, 100,null,null);
+        Curso newCurso = new Curso();
+        newCurso.setNombre("CursoActualizado");
+        newCurso.setCreditos(100);
+        newCurso.setCupo(100);
         HttpEntity<Curso> request = new HttpEntity<>(newCurso);
         ResponseEntity<Void> response = restTemplate
                 .exchange("/curso/101", HttpMethod.PUT, request, Void.class);
@@ -102,7 +116,10 @@ public class CursoApplicationTest {
     }
     @Test
     void shouldNotUpdateNotExistingCurso() {
-        Curso newCurso = new Curso(null, "CursoActualizado", 100, 100, null, null);
+        Curso newCurso = new Curso();
+        newCurso.setNombre("newCurso");
+        newCurso.setCreditos(99);
+        newCurso.setCupo(99);
         HttpEntity<Curso> request = new HttpEntity<>(newCurso);
         ResponseEntity<Void> response = restTemplate
                 .exchange("/curso/999", HttpMethod.PUT, request, Void.class);
@@ -118,5 +135,60 @@ public class CursoApplicationTest {
         ResponseEntity<String> responseGet = restTemplate
                 .getForEntity("/curso/101", String.class);
         assertThat(responseGet.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
+    @Test
+    @DirtiesContext
+    void shouldAssing3CursosToDocente(){
+        ResponseEntity<Docente> responseDocente = restTemplate
+                .getForEntity("/docente/90", Docente.class);
+        assertThat(responseDocente.getStatusCode()).isEqualTo(HttpStatus.OK);
+        Docente docente = responseDocente.getBody();
+        Curso[] cursosNuevos = Stream.generate(Curso::new)
+                .limit(3)
+                .peek(c -> {
+                    c.setNombre("Curso");
+                    c.setCreditos(99);
+                    c.setCupo(99);
+                    c.setDocenteAsignado(docente);
+                    c.setAlumnosInscriptos(new ArrayList<>());
+                })
+                .toArray(Curso[]::new);
+        for(Curso c : cursosNuevos){
+            ResponseEntity<Void> response = restTemplate
+                .postForEntity("/curso", c, Void.class);
+            assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        }
+    }
+    @Test
+    @DirtiesContext
+    void shouldNotAssing4CursosToDocente(){
+        ResponseEntity<Docente> responseDocente = restTemplate
+                .getForEntity("/docente/90", Docente.class);
+        assertThat(responseDocente.getStatusCode()).isEqualTo(HttpStatus.OK);
+        Docente docente = responseDocente.getBody();
+        Curso[] cursosNuevos = Stream.generate(Curso::new)
+                .limit(3)
+                .peek(c -> {
+                    c.setNombre("Curso");
+                    c.setCreditos(99);
+                    c.setCupo(99);
+                    c.setDocenteAsignado(docente);
+                    c.setAlumnosInscriptos(new ArrayList<>());
+                })
+                .toArray(Curso[]::new);
+        for(Curso c : cursosNuevos){
+            ResponseEntity<Void> response = restTemplate
+                    .postForEntity("/curso", c, Void.class);
+            assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        }
+        Curso cursoNuevo = new Curso();
+        cursoNuevo.setNombre("Curso");
+        cursoNuevo.setCreditos(99);
+        cursoNuevo.setCupo(99);
+        cursoNuevo.setDocenteAsignado(docente);
+        cursoNuevo.setAlumnosInscriptos(new ArrayList<>());
+        ResponseEntity<Void> response = restTemplate
+                .postForEntity("/curso", cursoNuevo, Void.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 }

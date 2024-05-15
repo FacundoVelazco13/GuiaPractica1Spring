@@ -29,14 +29,7 @@ public class Curso {
 
     public Curso() {
     }
-    public Curso(Integer id, String nombre, Integer creditos, Integer cupo, Docente docenteAsignado, List<Alumno> alumnosInscriptos) {
-        this.id = id;
-        this.nombre = nombre;
-        this.creditos = creditos;
-        this.cupo = cupo;
-        this.docenteAsignado = docenteAsignado;
-        this.alumnosInscriptos = alumnosInscriptos;
-    }
+
     public Integer getId() {
         return id;
     }
@@ -73,10 +66,8 @@ public class Curso {
         return docenteAsignado;
     }
 
-    public void setDocenteAsignado(Docente docenteAsignado) throws DocenteExcedidoException {
-        if (docenteAsignado.getCursosDictados().size() >= 3) {
-            throw new DocenteExcedidoException();
-        }else this.docenteAsignado = docenteAsignado;
+    public void setDocenteAsignado(Docente docenteAsignado) {
+        this.docenteAsignado = docenteAsignado;
     }
     public List<Alumno> getAlumnosInscriptos() {
         return alumnosInscriptos;
@@ -85,10 +76,8 @@ public class Curso {
     public void setAlumnosInscriptos(List<Alumno> alumnosInscriptos) {
         this.alumnosInscriptos = alumnosInscriptos;
     }
-    public void addAlumnosInscriptos(Alumno alumno) throws CupoExcedidoException {
-        if (this.alumnosInscriptos.size() >= this.cupo) {
-            throw new CupoExcedidoException();
-        }else this.alumnosInscriptos.add(alumno);
+    public void addAlumnosInscriptos(Alumno alumno) {
+        this.alumnosInscriptos.add(alumno);
     }
 
     @Override
