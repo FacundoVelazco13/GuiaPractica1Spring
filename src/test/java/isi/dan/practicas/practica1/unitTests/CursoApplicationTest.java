@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 
+import javax.print.Doc;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -72,7 +73,7 @@ public class CursoApplicationTest {
     }
     @Test
     void shouldNotCreateCursoWithId() {
-        Curso newCurso = new Curso(1, "newCurso", 99, 99, null, null);
+        Curso newCurso = new Curso(1, "newCurso", 99, 99, null,null);
         ResponseEntity<Void> response = restTemplate
                 .postForEntity("/curso", newCurso, Void.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
@@ -80,7 +81,7 @@ public class CursoApplicationTest {
     @Test
     @DirtiesContext
     void shouldUpdateCurso() {
-        Curso newCurso = new Curso(null, "CursoActualizado", 100, 100,new Docente(), new ArrayList<>());
+        Curso newCurso = new Curso(null, "CursoActualizado", 100, 100,null,null);
         HttpEntity<Curso> request = new HttpEntity<>(newCurso);
         ResponseEntity<Void> response = restTemplate
                 .exchange("/curso/101", HttpMethod.PUT, request, Void.class);
@@ -101,7 +102,7 @@ public class CursoApplicationTest {
     }
     @Test
     void shouldNotUpdateNotExistingCurso() {
-        Curso newCurso = new Curso(null, "CursoActualizado", 100, 100, new Docente(), new ArrayList<>());
+        Curso newCurso = new Curso(null, "CursoActualizado", 100, 100, null, null);
         HttpEntity<Curso> request = new HttpEntity<>(newCurso);
         ResponseEntity<Void> response = restTemplate
                 .exchange("/curso/999", HttpMethod.PUT, request, Void.class);

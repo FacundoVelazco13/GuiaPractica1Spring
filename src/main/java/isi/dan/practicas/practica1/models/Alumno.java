@@ -1,8 +1,6 @@
 package isi.dan.practicas.practica1.models;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 
@@ -11,7 +9,7 @@ import java.util.Objects;
 
 @Entity
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "id")
+        property = "id", scope = Alumno.class)
 public class Alumno {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)

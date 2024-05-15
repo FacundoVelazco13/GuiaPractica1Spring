@@ -6,15 +6,14 @@ import jakarta.persistence.*;
 import java.util.List;
 
 @Entity
-//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class,
-//        property = "id")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id", scope = Docente.class)
 public class Docente {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Integer id;
     private String nombre;
     private Double salario;
-    @JsonManagedReference(value = "docente-curso")
     @OneToMany(mappedBy = "docenteAsignado")
     private List<Curso> cursosDictados;
     public Docente() {
@@ -50,6 +49,7 @@ public class Docente {
     }
 
     public List<Curso> getCursosDictados() {
+        if(cursosDictados == null) return List.of();
         return cursosDictados;
     }
 
@@ -58,5 +58,15 @@ public class Docente {
     }
     public void addCursosDictados(Curso curso) {
         this.cursosDictados.add(curso);
+    }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "id=" + id +
+                ", nombre='" + nombre + '\'' +
+                ", salario=" + salario +
+                ", cursosDictados=" + cursosDictados +
+                '}';
     }
 }

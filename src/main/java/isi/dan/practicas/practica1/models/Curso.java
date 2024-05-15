@@ -8,7 +8,7 @@ import jakarta.persistence.*;
 import java.util.List;
 @Entity
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "id")
+        property = "id", scope = Curso.class)
 public class Curso {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -16,7 +16,7 @@ public class Curso {
     private String nombre;
     private Integer creditos;
     private Integer cupo;
-    @JsonBackReference(value = "docente-curso")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     @ManyToOne
     private Docente docenteAsignado;
     @ManyToMany
@@ -93,7 +93,7 @@ public class Curso {
 
     @Override
     public String toString() {
-        return "Curso{" +
+        return "{" +
                 "id=" + id +
                 ", nombre='" + nombre + '\'' +
                 ", creditos=" + creditos +
